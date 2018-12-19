@@ -124,15 +124,15 @@ $(document).ready(function () {
 </div>
 
 
-<div id="--3" class="section level1">
-<h1>Лабораторная работа 3</h1>
+<div id="--2" class="section level1">
+<h1>Лабораторная работа 2</h1>
 <div id="--" class="section level2">
 <h2>Задачи для лабораторной:</h2>
 <ul>
-<li>работа с текстом;</li>
-<li>использование регулярных выражений для извлечения данных;</li>
+<li>манипулирование объектами данных;</li>
+<li>работа с циклами;</li>
 <li>переписывание существующего кода;</li>
-<li>ассиметричные распределения.</li>
+<li>моделирование при помощи генератора случайных величин.</li>
 </ul>
 </div>
 <div id="--" class="section level2">
@@ -145,141 +145,290 @@ $(document).ready(function () {
 </div>
 <div id="-" class="section level2">
 <h2>Исходные данные</h2>
-<p>Файл <em>forbes.htm</em> содержит список богатейших американцев по версии журнала Форбс. На его примере потренируемся в разборе html страниц.</p>
+<p>Установленная среда R включает в себя набор заранее сконфигурированных массивов данных. В данной лабораторной требуется использовать одну из них — датафрейм из 93 машин-новинок 1993 года. Для того, чтобы загрузить данный датафрейм, необходимо выполнить следующие команды:</p>
+<pre><code>library(MASS)
+data(Cars93)</code></pre>
+<p>Для того, чтобы ознакомиться со структурой и составом данных, можно выполнить команду <code>View(Cars93)</code> или нажать на соответствующую кнопку в RStudio.</p>
 <div id="-1" class="section level3">
 <h3>Задание 1</h3>
 <ol style="list-style-type: decimal">
-<li>Используйте команду <code>readLines</code> для загрузки файла в текстовый вектор <em>html</em>.</li>
+<li>Выполните команду <code>summary()</code> на полном наборе данных. Можно ли по результату выполнения сказать сколько строк в датафрейме? Если да, напишите сколько. Если нет, то приведите другой способ.</li>
 </ol>
-<pre class="r"><code>html&lt;-readLines(&quot;../data/forbes.htm&quot;)</code></pre>
-<ol style="list-style-type: decimal">
-<li>Сколько строк в файле?</li>
-</ol>
-<pre class="r"><code>length(html)</code></pre>
-<pre><code>## [1] 1991</code></pre>
+<pre class="r"><code>library(MASS)
+data(Cars93)
+#View(Cars93)
+summary(Cars93)</code></pre>
+<pre><code>##     Manufacturer     Model         Type      Min.Price         Price      
+##  Chevrolet: 8    100    : 1   Compact:16   Min.   : 6.70   Min.   : 7.40  
+##  Ford     : 8    190E   : 1   Large  :11   1st Qu.:10.80   1st Qu.:12.20  
+##  Dodge    : 6    240    : 1   Midsize:22   Median :14.70   Median :17.70  
+##  Mazda    : 5    300E   : 1   Small  :21   Mean   :17.13   Mean   :19.51  
+##  Pontiac  : 5    323    : 1   Sporty :14   3rd Qu.:20.30   3rd Qu.:23.30  
+##  Buick    : 4    535i   : 1   Van    : 9   Max.   :45.40   Max.   :61.90  
+##  (Other)  :57    (Other):87                                               
+##    Max.Price       MPG.city      MPG.highway                  AirBags  
+##  Min.   : 7.9   Min.   :15.00   Min.   :20.00   Driver &amp; Passenger:16  
+##  1st Qu.:14.7   1st Qu.:18.00   1st Qu.:26.00   Driver only       :43  
+##  Median :19.6   Median :21.00   Median :28.00   None              :34  
+##  Mean   :21.9   Mean   :22.37   Mean   :29.09                          
+##  3rd Qu.:25.3   3rd Qu.:25.00   3rd Qu.:31.00                          
+##  Max.   :80.0   Max.   :46.00   Max.   :50.00                          
+##                                                                        
+##  DriveTrain  Cylinders    EngineSize      Horsepower         RPM      
+##  4WD  :10   3     : 3   Min.   :1.000   Min.   : 55.0   Min.   :3800  
+##  Front:67   4     :49   1st Qu.:1.800   1st Qu.:103.0   1st Qu.:4800  
+##  Rear :16   5     : 2   Median :2.400   Median :140.0   Median :5200  
+##             6     :31   Mean   :2.668   Mean   :143.8   Mean   :5281  
+##             8     : 7   3rd Qu.:3.300   3rd Qu.:170.0   3rd Qu.:5750  
+##             rotary: 1   Max.   :5.700   Max.   :300.0   Max.   :6500  
+##                                                                       
+##   Rev.per.mile  Man.trans.avail Fuel.tank.capacity   Passengers   
+##  Min.   :1320   No :32          Min.   : 9.20      Min.   :2.000  
+##  1st Qu.:1985   Yes:61          1st Qu.:14.50      1st Qu.:4.000  
+##  Median :2340                   Median :16.40      Median :5.000  
+##  Mean   :2332                   Mean   :16.66      Mean   :5.086  
+##  3rd Qu.:2565                   3rd Qu.:18.80      3rd Qu.:6.000  
+##  Max.   :3755                   Max.   :27.00      Max.   :8.000  
+##                                                                   
+##      Length        Wheelbase         Width        Turn.circle   
+##  Min.   :141.0   Min.   : 90.0   Min.   :60.00   Min.   :32.00  
+##  1st Qu.:174.0   1st Qu.: 98.0   1st Qu.:67.00   1st Qu.:37.00  
+##  Median :183.0   Median :103.0   Median :69.00   Median :39.00  
+##  Mean   :183.2   Mean   :103.9   Mean   :69.38   Mean   :38.96  
+##  3rd Qu.:192.0   3rd Qu.:110.0   3rd Qu.:72.00   3rd Qu.:41.00  
+##  Max.   :219.0   Max.   :119.0   Max.   :78.00   Max.   :45.00  
+##                                                                 
+##  Rear.seat.room   Luggage.room       Weight         Origin  
+##  Min.   :19.00   Min.   : 6.00   Min.   :1695   USA    :48  
+##  1st Qu.:26.00   1st Qu.:12.00   1st Qu.:2620   non-USA:45  
+##  Median :27.50   Median :14.00   Median :3040               
+##  Mean   :27.83   Mean   :13.89   Mean   :3073               
+##  3rd Qu.:30.00   3rd Qu.:15.00   3rd Qu.:3525               
+##  Max.   :36.00   Max.   :22.00   Max.   :4105               
+##  NA's   :2       NA's   :11                                 
+##             Make   
+##  Acura Integra: 1  
+##  Acura Legend : 1  
+##  Audi 100     : 1  
+##  Audi 90      : 1  
+##  BMW 535i     : 1  
+##  Buick Century: 1  
+##  (Other)      :87</code></pre>
+<p>С помощью команды <code>summary()</code> можно просмотреть различные статистические показатели для каждой колонки, такие как <em>среднее значение</em>, <em>медиану</em>, <em>минимальное</em>, <em>максимальное</em> и т.д. для числовых показателей, а для номинальных переменных данная команда производит <em>классификацию</em>, показывая какое количество переменных относится к той или иной величине. Но эта команда не выводит количество строк. Зато если набор данных имеет колонку с номинальными значениями (как в нашем случае колонка <em>Manufactures</em>) то по ней можно определить количество колонок, сложив все значения.</p>
+<p>В нашем случае количество колонок будет равно <strong>93</strong>.</p>
+<p>Для получения именно количества колонок можно воспользоваться командой <code>nrow()</code>.</p>
+<pre class="r"><code>#Количество колонок можно вывести с помощью команды nrom
+nrow(Cars93)</code></pre>
+<pre><code>## [1] 93</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>Сколько символов в файле?</li>
+<li>Найдите среднюю цену машин с задним приводом.</li>
 </ol>
-<pre class="r"><code>#Функция nchar() подсчитывает количество символов в каждой строке
-#Ф-ия sum() суммирует все значения
-sum(nchar(html))</code></pre>
-<pre><code>## [1] 80380</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Откройте файл в текстовом редакторе. Найдите строки, содержащие данные о Билле Гейтсе и Ларри Эллисоне и запомните размер их дохода.</li>
-</ol>
-<p>Размер дохода:</p>
-<pre><code>1) Билла Гейтса составляет $72 000 000 000 ($72 B)
-2) Ларри Эллисон $41 000 000 000 ($41 B)</code></pre>
+<pre class="r"><code>#т.к. данные хранятся в виде датафрейма, то чтобы получить данные конкретной колонки, нужно обратиться через знак $, также можно и с помощью квадратных скобок
+#сначала выбираем все машины с задним приводом, потом их стоимости и берем от этих значений среднее:
+mean.prices.rear&lt;-mean(Cars93$Price[Cars93$DriveTrain==&quot;Rear&quot;])
+mean.prices.rear</code></pre>
+<pre><code>## [1] 28.95</code></pre>
 <ol start="3" style="list-style-type: decimal">
-<li>Напишите шаблон регулярного выражения и используйте функцию <code>grep</code>, чтобы извлечь размер дохода из данных в векторе <em>html</em>.</li>
+<li>Найдите минимальное число лошадиных сил автомобиля для 7 пассажиров. Для 6 пассажиров.</li>
 </ol>
-<pre class="r"><code>profits&lt;-grep(&quot;\\$\\d+,*\\d*\\sB&quot;,html)
-str(profits)</code></pre>
-<pre><code>##  int [1:100] 547 557 567 577 587 597 607 617 627 637 ...</code></pre>
-<p>Удостоверьтесь, что полученный вектор номеров строк содержит содержит ровно 100 записей и ссылается на номера строк в котрых действительно есть информация о доходе, а не просто первый попавшийся текст.</p>
-<ol start="4" style="list-style-type: decimal">
-<li>Напишите код, использовав регулярное выражение из п. 3, и функции <code>regexp</code> и <code>regmatches</code>, чтобы извлечь все данные о доходе.</li>
-</ol>
-<pre class="r"><code>m&lt;-regexpr(&quot;\\$\\d+,*\\d*\\sB&quot;,html,perl=TRUE)
-prof.regmatch&lt;-regmatches(html,m)</code></pre>
-<p>Проверьте следующее:</p>
-<ol style="list-style-type: decimal">
-<li>Должно быть ровно сто значений.</li>
-</ol>
-<pre class="r"><code>length(prof.regmatch)</code></pre>
+<pre class="r"><code>min.horsePower.7pass&lt;-min(Cars93$Horsepower[Cars93$Passengers==7])
+#минимальное количество лошадей для 7 пассажиров
+min.horsePower.7pass</code></pre>
+<pre><code>## [1] 109</code></pre>
+<pre class="r"><code>#минимальное количество лошадей для 6 пассажиров
+min.horsePower.6pass&lt;-min(Cars93$Horsepower[Cars93$Passengers==6])
+min.horsePower.6pass</code></pre>
 <pre><code>## [1] 100</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Самый большой доход должен быть доход Билла Гейтса</li>
-</ol>
-<pre class="r"><code>#т.к. Запись о Билл Гейтсе находится в списке первой
-prof.regmatch[1]</code></pre>
-<pre><code>## [1] &quot;$72 B&quot;</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Такой доход должен быть в списке один раз.</li>
-</ol>
-<pre class="r"><code>#произведем выбор по условию равенства
-length(prof.regmatch[prof.regmatch==prof.regmatch[1]])</code></pre>
-<pre><code>## [1] 1</code></pre>
 <ol start="4" style="list-style-type: decimal">
-<li>В всписке должна быть цифра, которую мы запомнили для Ларри Эллисона.</li>
+<li>Найдите машины с максимальным, минимальным и средним(медианой) расстоянием, которая машина может проехать по трассе. Вам понадобятся 2 колонки, чтобы рассчитать расстояние. Какие?</li>
 </ol>
-<pre class="r"><code>#Доход Ларри Эллисона $41 B
-prof.regmatch[prof.regmatch==&quot;$41 B&quot;]</code></pre>
-<pre><code>## [1] &quot;$41 B&quot;</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Должно быть как минимум два значения, встречающихся несколько раз.</li>
-</ol>
-<pre class="r"><code>length(unique(prof.regmatch))</code></pre>
-<pre><code>## [1] 66</code></pre>
-<p>Т.к. всего список состоит из 100 записей, а уникальных только 66, соответственно неуникальных 34 значения</p>
+<pre class="r"><code>#Для этого нам понадобятся колонки MPG.highway и Fuel.tank.capacity
+
+max.distance&lt;-max(Cars93$MPG.highway*Cars93$Fuel.tank.capacity)
+min.distance&lt;-min(Cars93$MPG.highway*Cars93$Fuel.tank.capacity)
+median.distance&lt;-median(Cars93$MPG.highway*Cars93$Fuel.tank.capacity)
+statistics&lt;-c(max.distance,min.distance,median.distance)
+names(statistics)&lt;-c(&quot;max&quot;,&quot;min&quot;,&quot;median&quot;)
+statistics</code></pre>
+<pre><code>##    max    min median 
+##  633.0  288.6  470.4</code></pre>
+<pre class="r"><code>#Получаем машину с максимальным расстоянием
+headers&lt;-c(&quot;Manufacturer&quot;,&quot;Model&quot;,&quot;MPG.highway&quot;,&quot;Fuel.tank.capacity&quot;)
+cars.max.distance&lt;-Cars93[Cars93$MPG.highway*Cars93$Fuel.tank.capacity==max.distance,headers]
+cars.max.distance</code></pre>
+<pre><code>##   Manufacturer Model MPG.highway Fuel.tank.capacity
+## 5          BMW  535i          30               21.1</code></pre>
+<pre class="r"><code>#Получаем машину с минимальным расстоянием
+cars.min.distance&lt;-Cars93[Cars93$MPG.highway*Cars93$Fuel.tank.capacity==min.distance,headers]
+cars.min.distance</code></pre>
+<pre><code>##    Manufacturer Model MPG.highway Fuel.tank.capacity
+## 60      Mercury Capri          26               11.1</code></pre>
+<pre class="r"><code>#Получаем машину со средним(медиана) расстоянием
+cars.median.distance&lt;-Cars93[Cars93$MPG.highway*Cars93$Fuel.tank.capacity==median.distance,headers]
+cars.median.distance</code></pre>
+<pre><code>##    Manufacturer Model MPG.highway Fuel.tank.capacity
+## 56        Mazda   MPV          24               19.6</code></pre>
 </div>
-<div id="-2" class="section level3">
-<h3>Задание 2</h3>
-<ol start="5" style="list-style-type: decimal">
-<li>В данных доход представлен в формате <strong>“$42 B”</strong>, что означает <strong>42 × 10^9</strong>. Преобразуйте этот формат в числовой и сохраните в вектор <em>worths</em>.</li>
-</ol>
-<pre class="r"><code>worths&lt;-as.numeric(sub(&quot;,&quot;,&quot;.&quot;,sub(&quot; B&quot;,&quot;&quot;,sub(&quot;\\$&quot;,&quot;&quot;,prof.regmatch))))
-worths&lt;-worths*10^9</code></pre>
-<p>Удостоверьтесь в следующем: 1. <em>worths</em> является вектором и в нём сто занчений типа <em>double</em>.</p>
-<pre class="r"><code>typeof(worths) #ф-ия для определения типа данных</code></pre>
-<pre><code>## [1] &quot;double&quot;</code></pre>
-<pre class="r"><code>length(worths)</code></pre>
-<pre><code>## [1] 100</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Все элементы вектора <em>worths</em> больше 1 миллиарда.</li>
-</ol>
-<pre class="r"><code>length(worths[worths&gt;1*10^9])</code></pre>
-<pre><code>## [1] 100</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Самое большое число это доход Билла Гейтса.</li>
-</ol>
-<pre class="r"><code>#Доход Билла Гейтса 72*10^9 $
-length(worths[worths&gt;72*10^9])</code></pre>
-<pre><code>## [1] 0</code></pre>
-<ol start="6" style="list-style-type: decimal">
-<li><p>Используйте вектор <em>worths</em> , чтобы выяснить следующее:</p></li>
-<li><p>Какова медиана ста этих записей?</p></li>
-</ol>
-<pre class="r"><code>median.worths&lt;-median(worths)
-median.worths</code></pre>
-<pre><code>## [1] 8.3e+09</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Средний доход?</li>
-</ol>
-<pre class="r"><code>mean.worths&lt;-mean(worths)
-mean.worths</code></pre>
-<pre><code>## [1] 1.293e+10</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Как много людей из этого списка имеют доход больше 5млрд., 10, 25?</li>
-</ol>
-<pre class="r"><code>statistic&lt;-data.frame(&quot;больше 5 млрд.&quot;=length(worths[worths&gt;5*10^9]),
-                      &quot;больше 10 млрд.&quot;=length(worths[worths&gt;10*10^9]),
-                      &quot;больше 25 млрд.&quot;=length(worths[worths&gt;25*10^9]),
-                      &quot;медиана&quot;=median.worths,
-                      &quot;среднее&quot;=mean.worths)
-statistic</code></pre>
-<pre><code>##   больше.5.млрд. больше.10.млрд. больше.25.млрд. медиана   среднее
-## 1             89              39              12 8.3e+09 1.293e+10</code></pre>
-<pre><code>1. Какой их общий доход?</code></pre>
-<pre class="r"><code>sum(worths[worths&gt;5*10^9])</code></pre>
-<pre><code>## [1] 1.2404e+12</code></pre>
-<pre><code>2. Какую долю от общего дохода, составляет пятёрка самых богатых.</code></pre>
-<pre class="r"><code>share.5.most.worths&lt;-sum(worths[1:5])/sum(worths)
-share.5.most.worths</code></pre>
-<pre><code>## [1] 0.1883217</code></pre>
-<pre><code>3. Какую долю от общего дохода, составляют 20 самых богатых.</code></pre>
-<pre class="r"><code>share.20.most.worths&lt;-sum(worths[1:20])/sum(worths)
-share.20.most.worths</code></pre>
-<pre><code>## [1] 0.4921114</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>В данных <a href="https://www.federalreserve.gov/releases/z1/current/z1.pdf">федерального резерва США</a> найдите показатель дохода всех домохозяйств (Household net worth) в соответвующем году, какую долю общего дохода составляют 100 богатейших людей.</li>
-</ol>
-<pre class="r"><code>#Данные в файле forbes.htm приведены за 2013 год
-#Показатель дохода всех домохозяйств США за 2013 год составил: 81,396*10^12 $
-sum(worths)/(81.396*10^12)</code></pre>
-<pre><code>## [1] 0.0158853</code></pre>
-<p>100 богатейших людей составляют около 1.6% от всего дохода всех домохозяйств США</p>
 </div>
+<div id="-2" class="section level2">
+<h2>Задание 2</h2>
+<p>В самом начале занятий приводился пример с фабрикой и производством автомобилей. Ниже приведён пример кода, который старается оптимизировать выпуск продукции ориентируясь на доступные ресурсы.</p>
+<pre class="r"><code>factory.run &lt;- function (o.cars=1, o.trucks=1) {
+  factory &lt;- matrix(c(40,1,60,3),nrow=2, dimnames=list(c(&quot;трудодни&quot;,&quot;сталь&quot;),c(&quot;автомобили&quot;,&quot;грузовики&quot;)))
+  warehouse &lt;- c(1600,70) #Доступно материалов на складе
+  names(warehouse) &lt;- rownames(factory)
+  reserve &lt;- c(8,1)
+  names(reserve) &lt;- rownames(factory)
+  output &lt;- c(o.cars, o.trucks)
+  names(output) &lt;- colnames(factory)
+  steps &lt;- 0 # Счётчик числа шагов цикла
+  repeat {
+    steps &lt;- steps + 1
+    needed &lt;- factory %*% output # Подсчитаем ресурсы, которые нам нужны для производства требуемого кол-ва машин
+    message(steps)
+    print(needed)
+    # Если ресурсов достаточно и остаток меньше или равен резерву, то мы произвели максимум возможного.
+    # Нужно прекращать
+    if (all(needed &lt;= warehouse) &amp;&amp; all((warehouse - needed) &lt;= reserve)) {
+      break()
+    }
+    # Если заявка слишком большая и ресурсов недостаточно, уменьшим её на 10%
+    if (all(needed &gt; warehouse)) {
+      output &lt;- output * 0.9
+      next()
+    }
+    # Если всё наоброт, то увеличим на 10%
+    if (all(needed &lt; warehouse)) {
+      output &lt;- output * 1.1
+      next()
+    }
+    # Если мы потребили одного ресурса слишком много, а другого недостаточно,
+    # то увеличим план на случайную величину
+    output &lt;- output * (1+runif(length(output),min=-0.1,max=0.1))
+  }
+  
+  return(output)
+}</code></pre>
+<ol style="list-style-type: decimal">
+<li>Выполните код и запустите эту функцию <code>factory.run()</code>.</li>
+</ol>
+<pre class="r"><code>#factory.run()</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>С каким входными значениями функция вызвана? Какой получился результат?</li>
+</ol>
+<p>Функция вызвана с постоянными входными значениями <em>o.cars</em>=1, <em>o.trucks</em>=1</p>
+<p>В результате получился ответ:</p>
+<p><em>трудодни</em>-&gt;1595.68640</p>
+<p><em>сталь</em>-&gt;69.30747</p>
+<p><em>автомобили</em>-&gt;10.47685</p>
+<p><em>грузовики</em>-&gt;19.61021</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Повторите вызов 4 раза. Полученные ответы отличаются от полученных ранее? Если да, почему? Если нет, почему?</li>
+</ol>
+<pre class="r"><code>#Полученные ответы
+work.days&lt;-c(1595.43412,1597.06742,1596.64979,1597.96666)
+steel&lt;-c(69.51973,69.84488,69.83509,69.86628)
+cars&lt;-c(10.25197,10.00849,9.997401,10.03206)
+lorries&lt;-c(19.75592,19.94546,19.945896,19.94474)
+results&lt;-data.frame(&quot;Трудодни&quot;=work.days,&quot;Сталь&quot;=steel,&quot;Автомобили&quot;=cars,&quot;Грузовики&quot;=lorries)
+results</code></pre>
+<pre><code>##   Трудодни    Сталь Автомобили Грузовики
+## 1 1595.434 69.51973  10.251970  19.75592
+## 2 1597.067 69.84488  10.008490  19.94546
+## 3 1596.650 69.83509   9.997401  19.94590
+## 4 1597.967 69.86628  10.032060  19.94474</code></pre>
+<p>Данные ответы отличаются, от полученных значений ранее, потому что при подборе значений, данная функция использовала случайные числа, она останавливалась когда значения попадут в необходимый диапазон значений.</p>
+<ol start="4" style="list-style-type: decimal">
+<li>В приведённом коде, переменные <em>steps</em> и <em>output</em> находятся внутри алгоритма. Измените функцию так, чтобы она возвращала число шагов и произведённое количество машин.</li>
+</ol>
+<pre class="r"><code>factory.run.modified.1 &lt;- function (o.cars=1, o.trucks=1) {
+  factory &lt;- matrix(c(40,1,60,3),nrow=2, dimnames=list(c(&quot;трудодни&quot;,&quot;сталь&quot;),c(&quot;автомобили&quot;,&quot;грузовики&quot;)))
+  warehouse &lt;- c(1600,70) #Доступно материалов на складе
+  names(warehouse) &lt;- rownames(factory)
+  reserve &lt;- c(8,1)
+  names(reserve) &lt;- rownames(factory)
+  output &lt;- c(o.cars, o.trucks)
+  steps &lt;- 0 # Счётчик числа шагов цикла
+  repeat {
+    steps &lt;- steps + 1
+    needed &lt;- factory %*% output # Подсчитаем ресурсы, которые нам нужны для производства требуемого кол-ва машин
+    # Если ресурсов достаточно и остаток меньше или равен резерву, то мы произвели максимум возможного.
+    # Нужно прекращать
+    if (all(needed &lt;= warehouse) &amp;&amp; all((warehouse - needed) &lt;= reserve)) {
+      break()
+    }
+    # Если заявка слишком большая и ресурсов недостаточно, уменьшим её на 10%
+    if (all(needed &gt; warehouse)) {
+      output &lt;- output * 0.9
+      next()
+    }
+    # Если всё наоброт, то увеличим на 10%
+    if (all(needed &lt; warehouse)) {
+      output &lt;- output * 1.1
+      next()
+    }
+    # Если мы потребили одного ресурса слишком много, а другого недостаточно,
+    # то увеличим план на случайную величину
+    output &lt;- output * (1+runif(length(output),min=-0.1,max=0.1))
+  }
+  output&lt;-c(output,steps)
+  names(output) &lt;- c(colnames(factory),&quot;количество шагов&quot;)
+  return(output)
+}</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Установите план равный тридцати автомобилям и 20 грузовикам и выполните функцию.</li>
+</ol>
+<pre class="r"><code>factory.run.modified.2 &lt;- function (o.cars=1, o.trucks=1) {
+  factory &lt;- matrix(c(40,1,60,3),nrow=2, dimnames=list(c(&quot;трудодни&quot;,&quot;сталь&quot;),c(&quot;автомобили&quot;,&quot;грузовики&quot;)))
+  warehouse &lt;- c(2400,90) #Доступно материалов на складе
+  names(warehouse) &lt;- rownames(factory)
+  reserve &lt;- c(8,1)
+  names(reserve) &lt;- rownames(factory)
+  output &lt;- c(o.cars, o.trucks)
+  
+  needed &lt;- factory %*% output
+  
+  steps &lt;- 0 # Счётчик числа шагов цикла
+  repeat {
+    steps &lt;- steps + 1
+    needed &lt;- factory %*% output # Подсчитаем ресурсы, которые нам нужны для производства требуемого кол-ва машин
+    # Если ресурсов достаточно и остаток меньше или равен резерву, то мы произвели максимум возможного.
+    # Нужно прекращать
+    if (all(needed &lt;= warehouse) &amp;&amp; all((warehouse - needed) &lt;= reserve)) {
+      break()
+    }
+    # Если заявка слишком большая и ресурсов недостаточно, уменьшим её на 10%
+    if (all(needed &gt; warehouse)) {
+      output &lt;- output * 0.9
+      next()
+    }
+    # Если всё наоброт, то увеличим на 10%
+    if (all(needed &lt; warehouse)) {
+      output &lt;- output * 1.1
+      next()
+    }
+    # Если мы потребили одного ресурса слишком много, а другого недостаточно,
+    # то увеличим план на случайную величину
+    output &lt;- output * (1+runif(length(output),min=-0.1,max=0.1))
+  }
+  output&lt;-c(output,steps,needed)
+  names(output) &lt;- c(colnames(factory),&quot;количество шагов&quot;,rownames(factory))
+  return(output)
+}</code></pre>
+<ol style="list-style-type: decimal">
+<li>Какой получили результат?</li>
+<li>Каким получился итоговый запрос ресурсов (переменная <em>needed</em>)</li>
+<li>Как много итераций пришлось пройти, чтобы получить ответ (переменная <em>steps</em>)?</li>
+<li>Для подсчёта можно пользоваться функциями печати (<code>print</code>, <code>message</code>) или вернуть результат из функции.</li>
+</ol>
+<p>Все полученные результаты были возвращены функцией в <em>data.frame</em>, который содержит данные о значениях переменных <em>output</em>, <em>steps</em> и <em>needed</em>.</p>
+<pre class="r"><code>#Результат
+results&lt;-factory.run.modified.2()
+results</code></pre>
+<pre><code>##       автомобили        грузовики количество шагов         трудодни 
+##         30.52517         19.53211       1041.00000       2392.93313 
+##            сталь 
+##         89.12149</code></pre>
 </div>
 </div>
 

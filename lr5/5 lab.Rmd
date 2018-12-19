@@ -1,0 +1,257 @@
+#Дисперсионный анализ. Пример
+
+Загрузим данные (требуется установить Рабочую папку с помощью setwd) или указать полный путь
+
+```{R}
+data = read.csv("../data/diet.csv",row.names=1)
+summary(data)
+```
+Ознакомимся со структурой и переименуем колонки, как нам удобно
+
+_https://www.sheffield.ac.uk/polopoly_fs/1.547015!/file/Diet_data_description.docx_
+
+_https://www.sheffield.ac.uk/mash/data_
+
+```{R}
+colnames(data) <- c("gender", "age", "height", "initial.weight", 
+                    "diet.type", "final.weight")
+
+data$diet.type <- factor(c("A", "B", "C")[data$diet.type])
+```
+
+Добавим новую колонку - Похудение
+
+```{R}
+data$weight.loss = data$initial.weight - data$final.weight
+```
+
+Проанализиуем есть ли различия по типам диет
+
+```{R}
+boxplot(weight.loss~diet.type,data=data,col="light gray",
+        ylab = "Weight loss (kg)", xlab = "Diet type")
+abline(h=0,col="green")
+```
+
+Проверим сбалансированные ли данные
+```{R}
+table(data$diet.type)
+```
+
+График групповых средних
+
+```{R}
+library(gplots) #библиотека устанавлевается с помощью install.packages
+plotmeans(weight.loss ~ diet.type, data=data)
+agr1<-aggregate(data$weight.loss, by = list(data$diet.type), FUN=sd)
+agr1
+```
+
+Для подгонки *ANOVA* модели используем функцию ``aov``, частный случай линейной модели ``lm``
+
+1. тест на межгрупповые различия:
+
+```{R}
+fit <- aov(weight.loss ~ diet.type, data=data)
+summary(fit)
+```
+
+2. попарные различия между средними значениями для всех групп
+
+```{R}
+TukeyHSD(fit)
+```
+
+Tukey honest significant differences test
+
+```{R}
+library(multcomp)
+par(mar=c(5,4,6,2))
+tuk <- glht(fit, linfct=mcp(diet.type="Tukey"))
+plot(cld(tuk, level=.05),col="lightgrey")
+```
+
+#Задание
+### 1. Добавить проверку на выбросы и избавиться от них
+
+Уберем данные о потере веса, содержащие слишком большое значение, и данные о людях, которые потолстели на данной диете
+
+```{R}
+data.without.outlier<-data[data$weight.loss<=8.2 & data$weight.loss>0,]
+```
+
+### 2. повторно проверсти все тесты и сравнить результаты с выбросами и без
+  2.1. График "коробочка с усами" стал более ровный
+```{R}
+boxplot(weight.loss~diet.type,data=data.without.outlier,col="light gray",
+        ylab = "Weight loss (kg)", xlab = "Diet type")
+```
+
+  2.2. Проверим график групповых средних
+  
+```{R}
+plotmeans(weight.loss ~ diet.type, data=data.without.outlier)
+```
+
+2.3. Проверим изменение значения ф-ии ``sd`` на группы по диетам после избавления от выбросов
+
+```{R}
+agr2<-aggregate(data.without.outlier$weight.loss, by = list(data.without.outlier$diet.type), FUN=sd)
+sum.aggregate<-data.frame("С выбросами"=agr1,"Без выбросов"=agr2)
+sum.aggregate
+```
+
+2.4. тест на межгрупповые различия:
+
+```{R}
+fit2 <- aov(weight.loss ~ diet.type, data=data.without.outlier)
+summary(fit2)
+```
+
+2.5. попарные различия между средними значениями для всех групп
+
+```{R}
+TukeyHSD(fit2)
+```
+
+```{R}
+par(mar=c(5,4,6,2))
+tuk <- glht(fit2, linfct=mcp(diet.type="Tukey"))
+plot(cld(tuk, level=.05),col="lightgreen")
+```
+
+После удаления выбросов, средние значения сброса веса для каждой диеты выравнились. Поэтому по построенным графикам видно, что диета "С", также лучше, чем остальные диеты, но, также, теперь заметна разница между диетой "А" и диетой "В", видно, что разница между средними значениями составляет примерно 0.93 в пользу диеты "В".
+
+Т.е. если сравнивать данные диеты, то на первом месте будет диета "С", на втором "В", на третьем "А"
+
+### 3. Открыть документ https://www.sheffield.ac.uk/polopoly_fs/1.547015!/file/Diet_data_description.docx и попытаться выполнить задания из него
+
+### 1.Есть ли разница потери веса от пола?
+
+
+1. Подготовим данные для анализа, избавимся от значений NA в колонке gender
+
+```{R}
+data.without.na<-data.without.outlier[!(is.na(data.without.outlier$gender)),]
+data.without.na$gender<-factor(c("Female","Male")[as.factor(data.without.na$gender)])
+```
+
+2. Построим диаграмму размаха пола относительно потери веса
+
+```{R}
+boxplot(weight.loss ~ gender, data=data.without.na, xlab="пол", ylab="потерянный вес, кг",main="Диаграмма размаха пол-вес", col="lightgreen")
+```
+
+3. Проверим сбалансированность данных
+
+```{R}
+table(data.without.na$gender)
+```
+
+После удаления выбросов и знчений NA, данные стали менее сбалансированы
+
+4. Построим график групповых средних в зависимости от пола:
+
+```{R}
+plotmeans(weight.loss ~ gender, data=data.without.na)
+aggregate(data.without.na$weight.loss, by = list(data.without.na$gender), FUN=sd)
+```
+
+Из графика видно, что средний сброшенный вес у женщин немного выше, чем у мужчин, но и среднеквадратичное отклонение у женщин больше
+
+5. Подгонка ANOVA модели:
+
+```{R}
+fit.gender.without.outlier <- aov(weight.loss ~ gender, data=data.without.na)
+summary(fit.gender.without.outlier)
+```
+
+6. Попарные различия между средними значениями для мужчин и женщин:
+
+```{R}
+TukeyHSD(fit.gender.without.outlier)
+```
+
+```{R}
+par(mar=c(5,4,6,2))
+tuk <- glht(fit.gender.without.outlier, linfct=mcp(gender="Tukey"))
+plot(cld(tuk, level=.05),col="lightgreen")
+```
+
+Исходя из полученных данных, видно, что диеты влияют лучше на женщин (разница средних значений -0.19), чем на мужчин, но эта разница не значительна.
+
+### Двухфакторный дисперсионный анализ зависимости величины потери веса от пола и типа диеты
+
+1. Построим диаграмму размаха значений потери веса по типу диеты и полу:
+
+  Сброс веса -> Тип диеты ~ пол
+  
+```{R}
+boxplot(weight.loss ~ diet.type * gender, data=data.without.na,col=c("lightpink", "lightgreen"), ylab = "Потеря веса, кг", main="Диаграмма размаха потеря веса vs тип диеты и пол")
+```
+
+
+Из данной диаграммы видно, во-первых что разбивая более детально пол-диета, на диаграмме опять появляются выбросы, которые не были видно до этого. Также можно сделать вывод о том, что лучшая диета для женщин - это диета "С", а для мужщин - это диета "B", отсюда же можно увидеть что разброс значений потери веса относительно диеты у женщин больше, чем у мужчин. 
+
+
+2. Построим график групповых средних для двухфакторного дисперсионного анализа:
+
+```{R}
+interaction.plot(x.factor = data.without.na$diet.type, trace.factor = data.without.na$gender, 
+                 response = data.without.na$weight.loss, fun = mean, 
+                 type = "b", legend = TRUE, xlab = "Тип диеты", ylab="Потеря веса",
+                 pch=c(1,19), col = c("blue","green"), main="График групповых средних")
+```
+
+Из данного графика четко видно, какая диета в среднем наилучшая, наихудшая, и какая средняя отдельно для женщин и мужчин. Данный график подтверждает предыдущий вывод о диетах.
+
+3. Подгонка ANOVA модели:
+
+Сравнивает категориальные переменные
+
+```{R}
+data.without.na$type_gender <- interaction(data.without.na$diet.type,data.without.na$gender)
+fit.gender.without.outlier2 <- aov(weight.loss ~ type_gender, data=data.without.na)
+summary(fit.gender.without.outlier2)
+```
+
+4. Попарные сравнения:
+
+```{R}
+TukeyHSD(fit.gender.without.outlier2)
+```
+
+Из попарного сравнения видно, что *для женщин*: 
+
+1) диета "С" самая лучшая
+
+2) диета "В" немного лучше, чем "А"
+
+*для мужчин*:
+
+1) диета "В" самая лучшая
+
+2) диета "А" немного лучше, чем "С"
+
+сравнивая *мужчин* и *женщин*:
+
+1) диета "В" и "А" больше подходят для мужчин
+
+2) соответственно "С" больше подходит для женщин
+
+###ANCOVA
+
+Сравнивает непрерывные переменные.
+
+добавим непрерывную переменную рост (height)
+  
+```{R}
+boxplot(weight.loss ~ diet.type + height, data=data.without.na,col=c("lightpink", "lightgreen"), ylab = "Потеря веса, кг", main="Диаграмма размаха рост + тип диеты и пол")
+```
+
+```{R}
+fit.weight.height.ancova <- aov(weight.loss ~ diet.type + height, data=data.without.na)
+summary(fit.weight.height.ancova)
+```
+
+По выходным данным видно, что значение p-value большое, а это означает, что рост не влияет на количество потерянного веса.  

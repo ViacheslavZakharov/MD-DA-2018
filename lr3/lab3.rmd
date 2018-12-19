@@ -18,7 +18,7 @@
 1. Используйте команду ``readLines`` для загрузки файла в текстовый вектор _html_.
 
 ```{R}
-html<-readLines("forbes.htm")
+html<-readLines("../data/forbes.htm")
 ```
    1. Сколько строк в файле?
 ```{R}
