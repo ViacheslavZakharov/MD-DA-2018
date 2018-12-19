@@ -90,6 +90,7 @@ boxplot(weight.loss~diet.type,data=data.without.outlier,col="light gray",
   2.2. Проверим график групповых средних
   
 ```{R}
+library(gplots)
 plotmeans(weight.loss ~ diet.type, data=data.without.outlier)
 ```
 
